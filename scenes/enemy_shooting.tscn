@@ -1,0 +1,145 @@
+[gd_scene load_steps=17 format=3 uid="uid://bmwnpgnowo8an"]
+
+[ext_resource type="Script" path="res://scripts/enemy_shooting.gd" id="1_ck4ef"]
+[ext_resource type="Texture2D" uid="uid://bwe2bhp04gn1p" path="res://assets/sprites/Characters/Soldiers/Ranged/RedRanged/MageRed.png" id="1_p05d1"]
+
+[sub_resource type="Animation" id="Animation_t3r6j"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_sfi0t"]
+resource_name = "attack"
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [24, 25, 26, 27, 28, 29]
+}
+
+[sub_resource type="Animation" id="Animation_yidml"]
+resource_name = "idle"
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_f2qy6"]
+_data = {
+"RESET": SubResource("Animation_t3r6j"),
+"attack": SubResource("Animation_sfi0t"),
+"idle": SubResource("Animation_yidml")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_8m48e"]
+animation = &"attack"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_hflr5"]
+animation = &"idle"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_mbcvl"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_6xgns"]
+advance_mode = 0
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_l2yk5"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_xrl7f"]
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_vlrdn"]
+states/End/position = Vector2(200, 215)
+states/Start/position = Vector2(200, 85)
+states/attack/node = SubResource("AnimationNodeAnimation_8m48e")
+states/attack/position = Vector2(608, 124)
+states/idle/node = SubResource("AnimationNodeAnimation_hflr5")
+states/idle/position = Vector2(422, 124)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_mbcvl"), "idle", "End", SubResource("AnimationNodeStateMachineTransition_6xgns"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_l2yk5"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_xrl7f")]
+graph_offset = Vector2(-63, -23)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_81cr1"]
+radius = 4.0
+height = 12.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p4apv"]
+radius = 4.0
+height = 12.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cuvow"]
+radius = 202.074
+
+[node name="enemy_shooting" type="CharacterBody2D"]
+collision_layer = 16
+collision_mask = 273
+script = ExtResource("1_ck4ef")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_p05d1")
+hframes = 6
+vframes = 8
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_f2qy6")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_f2qy6")
+}
+tree_root = SubResource("AnimationNodeStateMachine_vlrdn")
+anim_player = NodePath("../AnimationPlayer")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_81cr1")
+
+[node name="HurtBox" type="Area2D" parent="."]
+collision_layer = 64
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+shape = SubResource("CapsuleShape2D_p4apv")
+debug_color = Color(0.956863, 0.207843, 0, 0.419608)
+
+[node name="DetectingArea" type="Area2D" parent="."]
+collision_layer = 128
+collision_mask = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectingArea"]
+shape = SubResource("CircleShape2D_cuvow")
+debug_color = Color(0.580392, 0.552941, 0, 0.419608)
+
+[node name="ShootingRate" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="timeout" from="ShootingRate" to="." method="_on_shooting_rate_timeout"]
