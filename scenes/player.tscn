@@ -297,7 +297,7 @@ radius = 9.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ol3om"]
 radius = 3.0
-height = 8.0
+height = 6.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_7nvby"]
 radius = 6.32456
@@ -327,9 +327,6 @@ libraries = {
 }
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-libraries = {
-"": SubResource("AnimationLibrary_v3biy")
-}
 tree_root = SubResource("AnimationNodeStateMachine_3356s")
 advance_expression_base_node = NodePath("")
 anim_player = NodePath("../AnimationPlayer")
@@ -352,6 +349,7 @@ collision_layer = 4
 collision_mask = 32
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, 1)
 shape = SubResource("CapsuleShape2D_ol3om")
 debug_color = Color(0, 0.4, 0.0352941, 0.419608)
 
@@ -365,4 +363,7 @@ monitorable = false
 shape = SubResource("CircleShape2D_7nvby")
 debug_color = Color(0.0980392, 0.780392, 1, 0.419608)
 
+[connection signal="health_changed" from="." to="." method="_on_health_changed"]
+[connection signal="stamina_changed" from="." to="." method="_on_stamina_changed"]
 [connection signal="timeout" from="StaminaRegenTimer" to="." method="_on_stamina_regen_timer_timeout"]
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_hurtbox_area_entered"]

@@ -112,9 +112,6 @@ libraries = {
 }
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-libraries = {
-"": SubResource("AnimationLibrary_f2qy6")
-}
 tree_root = SubResource("AnimationNodeStateMachine_vlrdn")
 anim_player = NodePath("../AnimationPlayer")
 
@@ -131,7 +128,7 @@ debug_color = Color(0.956863, 0.207843, 0, 0.419608)
 
 [node name="DetectingArea" type="Area2D" parent="."]
 collision_layer = 128
-collision_mask = 0
+collision_mask = 4
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectingArea"]
@@ -139,7 +136,10 @@ shape = SubResource("CircleShape2D_cuvow")
 debug_color = Color(0.580392, 0.552941, 0, 0.419608)
 
 [node name="ShootingRate" type="Timer" parent="."]
-wait_time = 0.5
+wait_time = 0.4
 one_shot = true
 
-[connection signal="timeout" from="ShootingRate" to="." method="_on_shooting_rate_timeout"]
+[connection signal="ESHealth_changed" from="." to="." method="_on_es_health_changed"]
+[connection signal="area_entered" from="HurtBox" to="." method="_on_hurt_box_area_entered"]
+[connection signal="area_entered" from="DetectingArea" to="." method="_on_detecting_area_area_entered"]
+[connection signal="area_exited" from="DetectingArea" to="." method="_on_detecting_area_area_exited"]

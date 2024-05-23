@@ -20,3 +20,11 @@ func destroy():
 
 func _on_projectile_live_timeout():
 	destroy()
+
+# Hiboxes / Hurtboxes collisions
+func _on_area_entered(area):
+	destroy()
+
+# Object collisions
+func _on_body_entered(body):
+	destroy()
